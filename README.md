@@ -1,34 +1,68 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# E-Commerce Site
 
-## Getting Started
+This project sets up an e-commerce website that sells physical items.
 
-First, run the development server:
+There will be an admin portal where products are added. The front end will display items for sale. The site includes a basic cart that will persist across page loads. Users can items multiple times to increase the quantity of an item.
 
-```bash
-npm run dev
-# or
-yarn dev
+Payment is made via Stripe. Users will receive an email confirming their order - sellers will also receive an email indicating that an item has been sold.
+
+The order will be stored in the database.
+
+This site will not: - include an admin interface to see all orders - manage taxes - include multiple categories of products on individual pages - calculate shipping rates - include a separate page for each product
+
+The main idea here is to have the shopping cart.
+
+The final project can be found here:
+https://github.com/flaviocopes/bootcamp-2022-week-20-ecommerce
+
+## Initial Setup
+
+As with the other projects:
+
+    - set up an empty Next.js app
+      - npx create-next-app@latest localreviews
+    - allow absolute imports for modules
+      - jsconfig.json
+    - add Tailwind CSS
+      - npm install -D tailwindcss postcss autoprefixer
+      - npx tailwindcss init -p)
+      - add configuration to 'tailwind.config.js' and 'styles/globals.css'.
+    - create a PostgreSQL database and configure the '.env' file.
+    - install Prisma
+      - npm install -D prisma
+      - npx prisma init)
+    - setup authentication:
+      - Generate a new secret (https://generate-secret.vercel.app/32)
+      - npm install next-auth pg @next-auth/prisma-adapter nodemailer
+      - Add the following to the .env file:
+            EMAIL_SERVER=smtp://user:pass@smtp.mailtrap.io:465
+            EMAIL_FROM=Your name <you@email.com>
+            NEXTAUTH_URL=http://localhost:3000
+            SECRET=<ENTER A UNIQUE STRING HERE>
+      - Create the [...nextauth].js file in '/pages/api/auth' (this week's change is an 'isAdmin' flag for the user).
+      - Add the usual models to the 'prisma/schema.prisma' file (e.g. VerificationRequest, Account, Session, and User).  This weeks schema includes an 'isAdmin' flag for the user.
+        - Be sure to run: npx prisma migrate dev
+      - Refactor 'pages/_app.js' to use the 'SessionProvider'.
+
+Note: Use the following to generate the new secret:
+https://generate-secret.vercel.app/32
+
+And lastly, refactor 'index.js' to contain minimal content:
+
 ```
+        import Head from 'next/head'
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+        export default function Home() {
+        return (
+            <div>
+            <Head>
+                <title>Blog</title>
+                <meta name='description' content='Blog' />
+                <link rel='icon' href='/favicon.ico' />
+            </Head>
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
-
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
-
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+            <h1>Welcome!</h1>
+            </div>
+        )
+        }
+```
