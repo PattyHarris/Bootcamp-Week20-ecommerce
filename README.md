@@ -66,3 +66,9 @@ And lastly, refactor 'index.js' to contain minimal content:
         )
         }
 ```
+
+## Create the Admin Page
+
+1. We won't have a physical user interface element to allow users to login - it is assumed the admin will use 'http://localhost:3000/api/auth/signin' to login (meaning, the admin will need to know URL). After you login, we'll have a session in the database, but we still need to manually set the 'isAdmin' flag on the user.
+2. Flavio points to this URL (https://next-auth.js.org/configuration/callbacks#sign-in-callback) that can be used to restrict who can login....
+3. Add the 'pages/admin.js' (and then assuming you have a session and have changed the 'isAdmin' flag, you can access the page at 'http://localhost:3000/admin')
