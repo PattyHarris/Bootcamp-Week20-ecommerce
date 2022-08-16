@@ -70,5 +70,20 @@ And lastly, refactor 'index.js' to contain minimal content:
 ## Create the Admin Page
 
 1. We won't have a physical user interface element to allow users to login - it is assumed the admin will use 'http://localhost:3000/api/auth/signin' to login (meaning, the admin will need to know URL). After you login, we'll have a session in the database, but we still need to manually set the 'isAdmin' flag on the user.
-2. Flavio points to this URL (https://next-auth.js.org/configuration/callbacks#sign-in-callback) that can be used to restrict who can login....
+2. Flavio points to this URL (https://next-auth.js.org/configuration/callbacks#sign-in-callback) that discusses how to restrict who can login....
 3. Add the 'pages/admin.js' (and then assuming you have a session and have changed the 'isAdmin' flag, you can access the page at 'http://localhost:3000/admin')
+
+## Allow the Admin to Add Products
+
+1. Add the 'Product' model to the database (and run 'npx prisma migrate dev'). Note that the 'Product' includes an image.
+2. On 'pages/admin.js', add a button that enables the addition of a product - the button directs the user to 'pages/admin/new.js'.
+3. Now that we have an 'admin' folder, Flavio moves 'admin.js' to 'admin/index.js'. The url for the admin page, 'http://localhost:3000/admin' still is the same.
+4. Add the form to 'pages/admin/new.js'.
+   1. The pattern on the price ensures that the price includes a '.'.
+   2. A product can only be added if there is a title and a price.
+   3. For images: "We don’t handle image uploads but we’ll ask admins to first put the image in the /public folder and put the file name in an input field, which will be relative to the site’s current domain." - not sure what that means yet.
+5. The endpoint to handle the database request is 'pages/api/product.js'. Here, only admins can save products. Note also that the price is multiplied by 100 so we're not storing fractions.
+6. After saving the product, the admin is redirected back to the admin page where we'll show the products saved. Add 'data.js' to lib and add 'getProducts'.
+7. Import the new function in 'pages/admin/index.js' (which was 'pages/admin.js') along with 'prisma'. The latter is needed for 'getServerSideProps'.
+
+At this point, you can enter products - still not sure how we're supposed to deal with images.

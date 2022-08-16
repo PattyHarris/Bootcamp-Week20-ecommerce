@@ -60,3 +60,11 @@ model Session {
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+model Product {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  image       String?
+  price       Int?
+}
