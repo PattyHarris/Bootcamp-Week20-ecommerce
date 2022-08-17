@@ -81,9 +81,32 @@ And lastly, refactor 'index.js' to contain minimal content:
 4. Add the form to 'pages/admin/new.js'.
    1. The pattern on the price ensures that the price includes a '.'.
    2. A product can only be added if there is a title and a price.
-   3. For images: "We don’t handle image uploads but we’ll ask admins to first put the image in the /public folder and put the file name in an input field, which will be relative to the site’s current domain." - not sure what that means yet.
+   3. For images: "We don’t handle image uploads but we’ll ask admins to first put the image in the /public folder and put the file name in an input field, which will be relative to the site’s current domain." - this means that we're using the names of image files - e.g. 'public/bikeShoes.jpeg'.
 5. The endpoint to handle the database request is 'pages/api/product.js'. Here, only admins can save products. Note also that the price is multiplied by 100 so we're not storing fractions.
 6. After saving the product, the admin is redirected back to the admin page where we'll show the products saved. Add 'data.js' to lib and add 'getProducts'.
 7. Import the new function in 'pages/admin/index.js' (which was 'pages/admin.js') along with 'prisma'. The latter is needed for 'getServerSideProps'.
 
-At this point, you can enter products - still not sure how we're supposed to deal with images.
+At this point, you can enter products.
+
+## Display the Products on the Home Page
+
+1. To start we'll just copy what we did on the 'pages/admin/index.js'.
+2. Then, to make it 'prettier', the layout is modified to make it 2 columns when the screen is large, and add the product image and description.
+3. There should be checks for no image in the display:
+
+```
+              <div>
+                {product.image && (
+                  <Image
+                    src={`/` + product.image}
+                    width={"600"}
+                    height={"600"}
+                    alt={product.title}
+                  />
+                )}
+              </div>
+
+
+```
+
+This seems to work - if there's no image, the product title and description still appear on the right.
