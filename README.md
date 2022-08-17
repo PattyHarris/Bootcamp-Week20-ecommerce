@@ -92,7 +92,7 @@ At this point, you can enter products.
 
 1. To start we'll just copy what we did on the 'pages/admin/index.js'.
 2. Then, to make it 'prettier', the layout is modified to make it 2 columns when the screen is large, and add the product image and description.
-3. There should be checks for no image in the display:
+3. There should be checks for no image in the display - although I did add a 'No Image Available' png to the project which works just as well....
 
 ```
               <div>
@@ -110,3 +110,38 @@ At this point, you can enter products.
 ```
 
 This seems to work - if there's no image, the product title and description still appear on the right.
+
+## Add Cart Functionality
+
+1. In 'pages/index.js', add a button to each item to enable 'add to cart'. When the button is clicked, the item will appear in the 'cart' that will show above the items.
+2. Add 'cart' and 'setCart' in a 'useState' where 'cart' is a collection of products. When the 'add' button is clicked, the product will be added to the cart. Later in the steps, the display of items in the cart is refactored to not show multiples of the same product but instead show the product with its count:
+
+```
+                <button
+                  className='mb-4 mx-auto bg-black text-white px-3 py-1 text-lg'
+                  onClick={() => {
+                    const itemsInCartWithThisId = cart.filter((item) => {
+                      return item.product.id === product.id
+                    })
+
+                    if (itemsInCartWithThisId.length > 0) {
+                      setCart([
+                        ...cart.filter((item) => {
+                          return item.product.id !== product.id
+                        }),
+                        {
+                          product: itemsInCartWithThisId[0].product,
+                          quantity: itemsInCartWithThisId[0].quantity + 1,
+                        },
+                      ])
+                    } else {
+                      setCart([...cart, { product, quantity: 1 }])
+                    }
+                  }}
+                >
+                  Add to cart
+                </button>
+
+```
+
+3. The cart JSX is then modified to make it more visually interesting.
