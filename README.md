@@ -250,6 +250,7 @@ console.log(stripe_session.customer_details);
 It includes the amount paid, the customer address information, and the collection of ordered items.
 
 4. To store the items in the database, add the 'Order' model:
+
 ```
 model Order {
   id       Int  @id @default(autoincrement())
@@ -259,24 +260,45 @@ model Order {
   amount   Int
 }
 ```
-The payment_intent identifies the payment on Stripe which can be looked up.  It's also set to 'unique' to prevent multiple entries of the same order in the database if the page is reloaded.  The 'customer' and 'products' are store as JSON objects to simplify the tables (at least I think that's what is explained).
-5. In 'pages/api/stripe/success.js' add a call to prisma.order.create() to store the order.  Here's where things might be wrong (according to the Discord channel):
+
+The payment_intent identifies the payment on Stripe which can be looked up. It's also set to 'unique' to prevent multiple entries of the same order in the database if the page is reloaded. The 'customer' and 'products' are store as JSON objects to simplify the tables (at least I think that's what is explained). 5. In 'pages/api/stripe/success.js' add a call to prisma.order.create() to store the order. Here's where things might be wrong (according to the Discord channel) - the following fixes the issue with 'display_items' - using 'line_items' - note the 'expand' code too:
+
 ```
+ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+  const stripe_session = await stripe.checkout.sessions.retrieve(
+    req.body.session_id,
+    { expand: ["line_items"] }   <==== ADDED >
+  );
+
   await prisma.order.create({
     data: {
       customer: stripe_session.customer_details,
-      products: stripe_session.display_items,  <=====  Needs to be line_items   >
+      products: stripe_session.line_items,  <==== NOT display_items >
       payment_intent: stripe_session.payment_intent,
       amount: parseInt(stripe_session.amount_total),
     },
   });
 
 ```
+
 6. Flavio then states: "I can also add a check to redirect to /thanks without the session_id parameter right after we do the API call" - modifies 'pages/thanks.js' with this bit - this makes no sense:
+
 ```
    if (session_id) {
       call().then(() => {
         router.push("/thanks");
       });
     }
+```
+
+7. At this point, the code is generating the following error - not sure yet of the solution:
+
+```
+error - PrismaClientKnownRequestError:
+Invalid `prisma.order.create()` invocation:
+
+
+  Unique constraint failed on the fields: (`payment_intent`)
+    at RequestHandler.handleRequestError (/Users/pattyharris1/Documents/FlavioCopesBootcamp/Week20/ecommerce/node_modules/@prisma/client/runtime/index.js:28838:13)
+......
 ```
