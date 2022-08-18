@@ -4,6 +4,7 @@ import prisma from "lib/prisma";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import * as localForage from "localforage";
+import Script from "next/script";
 
 export default function Home({ products }) {
   const [cart, setCart] = useState([]);
@@ -22,6 +23,7 @@ export default function Home({ products }) {
 
   return (
     <div>
+      <Script src="https://js.stripe.com/v3/" />
       <Head>
         <title>Shop</title>
         <meta name="description" content="Shop" />
@@ -53,6 +55,45 @@ export default function Home({ products }) {
                 </div>
               </div>
             ))}{" "}
+            <button
+              className="mx-auto bg-black text-white px-3 py-1 my-4 text-xl font-bold justify-center flex"
+              onClick={async () => {
+                const res = await fetch("/api/stripe/session", {
+                  body: JSON.stringify({
+                    cart,
+                  }),
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  method: "POST",
+                });
+
+                const data = await res.json();
+
+                if (data.status === "error") {
+                  alert(data.message);
+                  return;
+                }
+
+                const sessionId = data.sessionId;
+                const stripePublicKey = data.stripePublicKey;
+
+                const stripe = Stripe(stripePublicKey);
+                const { error } = await stripe.redirectToCheckout({
+                  sessionId,
+                });
+
+                setCart([]);
+              }}
+            >
+              Go to Checkout
+            </button>{" "}
+            <button
+              className="mx-auto bg-black text-white px-3 py-1 my-4 text-sm justify-center flex"
+              onClick={() => setCart([])}
+            >
+              Clear Cart
+            </button>
           </div>
         )}
 
@@ -105,12 +146,6 @@ export default function Home({ products }) {
           ))}
         </div>
       </div>
-      <button
-        className="mx-auto bg-black text-white px-3 py-1 my-4 text-sm justify-center flex"
-        onClick={() => setCart([])}
-      >
-        Clear Cart
-      </button>
     </div>
   );
 }

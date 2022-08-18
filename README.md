@@ -188,3 +188,52 @@ useEffect(() => {
             </button>
 
 ```
+
+## Implement Checkout using Stripe Checkout
+
+1. First install the Stripe libraries:
+
+```
+npm i @stripe/react-stripe-js @stripe/stripe-js stripe
+```
+
+2. As before, make sure the .env is setup with the Stripe keys:
+
+```
+STRIPE_PUBLIC_KEY=pk_test_YOUR_KEY
+STRIPE_SECRET_KEY=sk_test_YOUR_KEY
+BASE_URL=http://localhost:3000
+```
+
+3. Add a 'Go to Checkout' button to the cart area of 'pages/index.js'.
+4. As in prior lessons, we need to first setup a session with Stripe. When we click on the "go to checkout' button, we send a post request to 'pages/api/stripe/session.js'. Here, one of the differences this week is that we need Stripe to collect the customer shipping address - that's done with 'shipping_address_collection':
+
+```
+.....
+  const stripe_session = await stripe.checkout.sessions.create({
+    payment_method_types: ["card"],
+    shipping_address_collection: {
+      allowed_countries: ["US", "CA", "IT"], //add our country ISO code
+    },
+    line_items: req.body.cart.map((item) => {
+      return {
+        name: item.product.title,
+        amount: item.product.price,
+        currency: "usd",
+        quantity: item.quantity,
+      };
+    }),
+    success_url:
+      process.env.BASE_URL + "/thanks?session_id={CHECKOUT_SESSION_ID}",
+    cancel_url: process.env.BASE_URL + "/cancelled",
+  });
+.....
+```
+
+The response contains the Stripe session ID and the Stripe public key (both needed by the frontend).
+
+5. In 'pages/index.js', import the Stripe script as we have done previously.
+6. In the button 'onClick' handler, initialize the redirect to Stripe and clear the cart.
+7. Add a 'thanks' and 'cancelled' page.
+8. In 'pages/thanks.js', we once again make the page server-side so we can access the router query data - here we need the session ID (from Stripe). Here we're also going to send the session ID to a '/api/stripe/success' route where the rest of the application logic related to the orders is handled.
+
