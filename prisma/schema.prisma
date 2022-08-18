@@ -68,3 +68,11 @@ model Product {
   image       String?
   price       Int?
 }
+
+model Order {
+  id       Int  @id @default(autoincrement())
+  customer Json
+  products Json
+  payment_intent String @unique
+  amount   Int
+}

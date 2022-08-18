@@ -237,3 +237,46 @@ The response contains the Stripe session ID and the Stripe public key (both need
 7. Add a 'thanks' and 'cancelled' page.
 8. In 'pages/thanks.js', we once again make the page server-side so we can access the router query data - here we need the session ID (from Stripe). Here we're also going to send the session ID to a '/api/stripe/success' route where the rest of the application logic related to the orders is handled.
 
+## Store the Payment in the Database
+
+1. Here's where there are issues with the lesson as noted in the discord channel.
+2. We're working the the 'success' end point at 'pages/api/stripe/success.js'.
+3. By adding the following console.log() before the 'res.send()', we'll get all the data that Stripe sends us:
+
+```
+console.log(stripe_session.customer_details);
+```
+
+It includes the amount paid, the customer address information, and the collection of ordered items.
+
+4. To store the items in the database, add the 'Order' model:
+```
+model Order {
+  id       Int  @id @default(autoincrement())
+  customer Json
+  products Json
+  payment_intent String @unique
+  amount   Int
+}
+```
+The payment_intent identifies the payment on Stripe which can be looked up.  It's also set to 'unique' to prevent multiple entries of the same order in the database if the page is reloaded.  The 'customer' and 'products' are store as JSON objects to simplify the tables (at least I think that's what is explained).
+5. In 'pages/api/stripe/success.js' add a call to prisma.order.create() to store the order.  Here's where things might be wrong (according to the Discord channel):
+```
+  await prisma.order.create({
+    data: {
+      customer: stripe_session.customer_details,
+      products: stripe_session.display_items,  <=====  Needs to be line_items   >
+      payment_intent: stripe_session.payment_intent,
+      amount: parseInt(stripe_session.amount_total),
+    },
+  });
+
+```
+6. Flavio then states: "I can also add a check to redirect to /thanks without the session_id parameter right after we do the API call" - modifies 'pages/thanks.js' with this bit - this makes no sense:
+```
+   if (session_id) {
+      call().then(() => {
+        router.push("/thanks");
+      });
+    }
+```

@@ -1,6 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import session from "./api/stripe/session";
+import { useEffect } from "react";
 
 export default function Thanks() {
   const router = useRouter();
@@ -19,8 +20,12 @@ export default function Thanks() {
       });
     };
 
-    call();
-  }, [session_id]);
+    if (session_id) {
+      call().then(() => {
+        router.push("/thanks");
+      });
+    }
+  }, [session_id, router]);
 
   return (
     <div>
