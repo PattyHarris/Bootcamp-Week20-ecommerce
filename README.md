@@ -145,3 +145,46 @@ This seems to work - if there's no image, the product title and description stil
 ```
 
 3. The cart JSX is then modified to make it more visually interesting.
+
+## Persist the Cart Across Browser Reloads
+
+1. The cart data will be stored locally in the browser local storage. We'll be using a library 'localForage'. This library abstracts away the browser storage, allowing us to store objects and arrays in local storage.
+2. The library internally uses a 'indexedDB' library for the storing data and that DB is made available to users - see below. The primary reason for this is that in the scenario, the user that purchases products are not required to have accounts.
+3. Install the library:
+
+```
+npm i localforage
+```
+
+4. We'll save the cart to local storage by listening to changes in the cart:
+
+```
+
+useEffect(() => {
+  localForage.setItem('cart', cart)
+}, [cart])
+```
+
+5. We can also the cart contents when the component is loaded using another 'useEffect':
+
+```
+useEffect(() => {
+  localForage.getItem('cart', function (err, value) {
+    if (value) {
+      setCart(value)
+    }
+  })
+}, [])
+```
+
+6. To manually delete the cart contents, open the 'DevTools Application' tab and delete the 'localforage' 'IndexedDB' database. But we'll add a 'clear cart' button anyway:
+
+```
+            <button
+              className='mx-auto bg-black text-white px-3 py-1 my-4 text-sm justify-center flex'
+              onClick={() => setCart([])}
+            >
+              Clear cart
+            </button>
+
+```

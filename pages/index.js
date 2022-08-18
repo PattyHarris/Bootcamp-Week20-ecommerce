@@ -2,10 +2,23 @@ import Head from "next/head";
 import { getProducts } from "lib/data";
 import prisma from "lib/prisma";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import * as localForage from "localforage";
 
 export default function Home({ products }) {
   const [cart, setCart] = useState([]);
+
+  useEffect(() => {
+    localForage.getItem("cart", function (err, value) {
+      if (value) {
+        setCart(value);
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    localForage.setItem("cart", cart);
+  }, [cart]);
 
   return (
     <div>
@@ -92,6 +105,12 @@ export default function Home({ products }) {
           ))}
         </div>
       </div>
+      <button
+        className="mx-auto bg-black text-white px-3 py-1 my-4 text-sm justify-center flex"
+        onClick={() => setCart([])}
+      >
+        Clear Cart
+      </button>
     </div>
   );
 }
