@@ -302,3 +302,53 @@ Invalid `prisma.order.create()` invocation:
     at RequestHandler.handleRequestError (/Users/pattyharris1/Documents/FlavioCopesBootcamp/Week20/ecommerce/node_modules/@prisma/client/runtime/index.js:28838:13)
 ......
 ```
+
+# Send Emails to Customer and Shop Owner
+
+1. We'll send 2 emails - one to confirm the order to the customer and one to inform the owner of the new order.
+2. The emails are sent in 'pages/api/stripe/success.js' before the response back to the client (which for some reason gives me a error 500 - look at that later). To send the emails, we'll use 'nodemailer' which is installed when we install the 'NextAuth' libraries.
+3. Import 'nodemailer' in 'pages/api/stripe/success.js'.
+4. After the order is stored:
+
+```
+const transporter = nodemailer.createTransport(process.env.EMAIL_SERVER)
+```
+
+Using Mailtrap.io, both the authorization and the email for the above will appear on the dashboard.
+
+5. Then, build the email body - see the code for details.
+6. Once the email contents are setup, then send the emails.
+
+Errors:
+
+1. Noted usage of 'line_items' as mentioned above.
+2. Both 'bodies' used '<p>${item.quantity} ${item.custom.name}</p>' - this isn't available on line_items, and therefore generates an error. Use 'item.description' instead (which seems more logical).
+3. I keep seeing this (and haven't been able to resolve):
+
+```
+Module not found: Can't resolve 'child_process' in '/Users/pattyharris1/Documents/FlavioCopesBootcamp/Week20/ecommerce/node_modules/stripe/lib'
+```
+
+4. Error 500 when the code returns from 'success' back to the client'.
+
+```
+POST http://localhost:3000/api/stripe/success 500 (Internal Server Error)
+```
+
+From this request:
+
+```
+  useEffect(() => {
+    const call = async () => {
+      await fetch("/api/stripe/success", {
+        method: "POST",
+        body: JSON.stringify({
+          session_id,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    };
+
+```
