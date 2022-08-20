@@ -38,6 +38,7 @@ export default function Thanks() {
       });
     }
   }, [session_id, router, isError]);
+
   return (
     <div>
       <Head>

@@ -364,6 +364,8 @@ I couldn't prevent 'success' from being called twice, so the goal was to clean u
 
 Refactoring:
 
-I put the all the logic back to 'pages/thanks.js' along with setting the 'success' url ('pages/api/stripe/session.js) back to 'thanks'.  I'm getting the same improved results!  Great!
+I put the all the logic back to 'pages/thanks.js' along with setting the 'success' url ('pages/api/stripe/session.js) back to 'thanks'. I'm getting the same improved results! Great!
 
-The try/catch in 'pages/api/stripe/success.js' isn't really needed but it's a good idea anyway.  The primary solution is the code in 'pages/thanks.js'.
+The try/catch in 'pages/api/stripe/success.js' isn't really needed but it's a good idea anyway. The primary solution is the code in 'pages/thanks.js'.
+
+Project is completed.
