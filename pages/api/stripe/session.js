@@ -9,7 +9,7 @@ export default async (req, res) => {
   const stripe_session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     shipping_address_collection: {
-      allowed_countries: ["US", "CA", "IT"], //add our country ISO code
+      allowed_countries: ["US", "CA", "IT"], // Add accepted country ISO codes
     },
     line_items: req.body.cart.map((item) => {
       return {
@@ -20,7 +20,7 @@ export default async (req, res) => {
       };
     }),
     success_url:
-      process.env.BASE_URL + "/mail?session_id={CHECKOUT_SESSION_ID}",
+      process.env.BASE_URL + "/thanks?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: process.env.BASE_URL + "/cancelled",
   });
 

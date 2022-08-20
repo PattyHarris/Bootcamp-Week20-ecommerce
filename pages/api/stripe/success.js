@@ -14,7 +14,6 @@ export default async (req, res) => {
     { expand: ["line_items"] }
   );
 
-  console.log("SUCCESS 1 =============== ", stripe_session.payment_intent);
   try {
     await prisma.order.create({
       data: {
@@ -25,12 +24,11 @@ export default async (req, res) => {
       },
     });
   } catch (error) {
-    console.log("============================" + error);
+    console.log("Create failed: " + error);
     res.end();
     return;
   }
 
-  console.log("SUCCESS 2 =============== ");
   console.log(stripe_session.customer_details);
 
   //==========

@@ -361,3 +361,9 @@ I couldn't prevent 'success' from being called twice, so the goal was to clean u
 2. After the call to 'pages/api/stripe/success.js' returns in 'pages/mail.js', I push 'pages/thanks.js' as the new route.
 3. In 'pages/mail.js', I added some try/catch logic as well as 'useState' logic to attempt to catch the errors return from the fetch call. This eliminates the 500 error as well as the error thrown by 'stripe/lib/utils.js' due to 'child_process' not found (you can check the file to see this error being thrown).
 4. In 'pages/api/stripe/success.js', I've also added some try/catch logic - this one seems to cut down the console logging of the payment_intent error to a few lines.
+
+Refactoring:
+
+I put the all the logic back to 'pages/thanks.js' along with setting the 'success' url ('pages/api/stripe/session.js) back to 'thanks'.  I'm getting the same improved results!  Great!
+
+The try/catch in 'pages/api/stripe/success.js' isn't really needed but it's a good idea anyway.  The primary solution is the code in 'pages/thanks.js'.
