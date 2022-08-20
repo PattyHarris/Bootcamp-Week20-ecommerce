@@ -1,32 +1,6 @@
 import Head from "next/head";
-import { useRouter } from "next/router";
-import session from "./api/stripe/session";
-import { useEffect } from "react";
 
 export default function Thanks() {
-  const router = useRouter();
-  const { session_id } = router.query;
-
-  useEffect(() => {
-    const call = async () => {
-      await fetch("/api/stripe/success", {
-        method: "POST",
-        body: JSON.stringify({
-          session_id,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    };
-
-    if (session_id) {
-      call().then(() => {
-        router.push("/thanks");
-      });
-    }
-  }, [session_id, router]);
-
   return (
     <div>
       <Head>
@@ -46,12 +20,4 @@ export default function Thanks() {
       </div>
     </div>
   );
-}
-
-export async function getServerSideProps(context) {
-  // This is need to make the router query data available client-side.
-  // See https://nextjs.org/docs/api-reference/next/router#router-object
-  return {
-    props: {},
-  };
 }

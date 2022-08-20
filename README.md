@@ -352,3 +352,12 @@ From this request:
     };
 
 ```
+
+I tried to make use of useState here as I've done before, but since this page is server generated, the 'state' is not kept.
+
+I couldn't prevent 'success' from being called twice, so the goal was to clean up the errors.
+
+1. I moved the logic for calling 'success' to mail.js (since that's what success actually does - sends mail messages). 'mail.js' doesn't return any UI.
+2. After the call to 'pages/api/stripe/success.js' returns in 'pages/mail.js', I push 'pages/thanks.js' as the new route.
+3. In 'pages/mail.js', I added some try/catch logic as well as 'useState' logic to attempt to catch the errors return from the fetch call. This eliminates the 500 error as well as the error thrown by 'stripe/lib/utils.js' due to 'child_process' not found (you can check the file to see this error being thrown).
+4. In 'pages/api/stripe/success.js', I've also added some try/catch logic - this one seems to cut down the console logging of the payment_intent error to a few lines.

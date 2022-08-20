@@ -1,3 +1,4 @@
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "lib/prisma";
 import nodemailer from "nodemailer";
 
@@ -13,15 +14,23 @@ export default async (req, res) => {
     { expand: ["line_items"] }
   );
 
-  await prisma.order.create({
-    data: {
-      customer: stripe_session.customer_details,
-      products: stripe_session.line_items,
-      payment_intent: stripe_session.payment_intent,
-      amount: parseInt(stripe_session.amount_total),
-    },
-  });
+  console.log("SUCCESS 1 =============== ", stripe_session.payment_intent);
+  try {
+    await prisma.order.create({
+      data: {
+        customer: stripe_session.customer_details,
+        products: stripe_session.line_items,
+        payment_intent: stripe_session.payment_intent,
+        amount: parseInt(stripe_session.amount_total),
+      },
+    });
+  } catch (error) {
+    console.log("============================" + error);
+    res.end();
+    return;
+  }
 
+  console.log("SUCCESS 2 =============== ");
   console.log(stripe_session.customer_details);
 
   //==========

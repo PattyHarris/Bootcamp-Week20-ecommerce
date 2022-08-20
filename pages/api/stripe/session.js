@@ -1,11 +1,11 @@
 export default async (req, res) => {
   if (req.method !== "POST") {
-    res.status(405).end(); 
+    res.status(405).end();
     return;
   }
 
   const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
-  
+
   const stripe_session = await stripe.checkout.sessions.create({
     payment_method_types: ["card"],
     shipping_address_collection: {
@@ -20,7 +20,7 @@ export default async (req, res) => {
       };
     }),
     success_url:
-      process.env.BASE_URL + "/thanks?session_id={CHECKOUT_SESSION_ID}",
+      process.env.BASE_URL + "/mail?session_id={CHECKOUT_SESSION_ID}",
     cancel_url: process.env.BASE_URL + "/cancelled",
   });
 
