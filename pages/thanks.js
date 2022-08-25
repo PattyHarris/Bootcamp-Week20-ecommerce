@@ -59,3 +59,11 @@ export default function Thanks() {
     </div>
   );
 }
+
+export async function getServerSideProps(context) {
+  // This is need to make the query data available client-side
+  // See https://nextjs.org/docs/api-reference/next/router#router-object
+  return {
+    props: {},
+  };
+}
