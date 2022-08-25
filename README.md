@@ -261,7 +261,9 @@ model Order {
 }
 ```
 
-The payment_intent identifies the payment on Stripe which can be looked up. It's also set to 'unique' to prevent multiple entries of the same order in the database if the page is reloaded. The 'customer' and 'products' are store as JSON objects to simplify the tables (at least I think that's what is explained). 5. In 'pages/api/stripe/success.js' add a call to prisma.order.create() to store the order. Here's where things might be wrong (according to the Discord channel) - the following fixes the issue with 'display_items' - using 'line_items' - note the 'expand' code too:
+The payment_intent identifies the payment on Stripe which can be looked up. It's also set to 'unique' to prevent multiple entries of the same order in the database if the page is reloaded. The 'customer' and 'products' are store as JSON objects to simplify the tables (at least I think that's what is explained). 
+
+5. In 'pages/api/stripe/success.js' add a call to prisma.order.create() to store the order. Here's where things might be wrong (according to the Discord channel) - the following fixes the issue with 'display_items' - using 'line_items' - note the 'expand' code too:
 
 ```
  const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
